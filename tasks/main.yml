@@ -12,7 +12,7 @@
   when:
     - azerothcore_docker_state in ['present', 'restarted', 'install']
     - azerothcore_docker_build_images
-    - azerothcore_docker_push_images
+    - azerothcore_docker_push_images_on_build
 
 - include_tasks: deploy.yml
   when: azerothcore_docker_state in ['present', 'restarted', 'absent', 'stopped']

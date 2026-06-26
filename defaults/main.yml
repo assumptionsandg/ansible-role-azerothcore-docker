@@ -1,30 +1,31 @@
 ---
 
-azerothcore_docker_repository: https://github.com/azerothcore/acore-docker.git
-azerothcore_docker_repository_version: fe1d9a8621e48406a3e19d1db4088326fa3b464c
-azerothcore_docker_repository_path: /opt/azcore/acore-docker
+azerothcore_docker_path: "/opt/azcore"
+
+azerothcore_docker_compose_repository: https://github.com/azerothcore/acore-docker.git
+azerothcore_docker_compose_version: fe1d9a8621e48406a3e19d1db4088326fa3b464c
+azerothcore_docker_compose_repository_path: "{{ azerothcore_docker_path }}/acore-docker"
 
 azerothcore_docker_build_images: false
 azerothcore_docker_builder_repository: https://github.com/azerothcore/azerothcore-wotlk.git
 azerothcore_docker_builder_version: 84a66e345b4c0acd58994c3be9617b077e710919
-azerothcore_docker_builder_repository_path: "/opt/azcore/build"
+azerothcore_docker_builder_repository_path: "{{ azerothcore_docker_path }}/build"
 
 azerothcore_docker_progression_enabled: true
 azerothcore_docker_progression_repository: https://github.com/ZhengPeiRu21/mod-individual-progression.git
 azerothcore_docker_progression_version: "20260616"
 azerothcore_docker_progression_phase: 7 # vanilla phase 6
 
-azerothcore_docker_project_path: /opt/azcore/azcore-compose-project # Doing it like this because modifying the repo contents in run seems bad.
-azerothcore_docker_modules_path: "/opt/azcore/modules"
-azerothcore_docker_config_path: "/opt/azcore/configs"
-azerothcore_docker_assets_path: "/opt/azcore/data"
+azerothcore_docker_modules_path: "{{ azerothcore_docker_path }}/modules"
+azerothcore_docker_config_path: "{{ azerothcore_docker_path }}/configs"
+azerothcore_docker_assets_path: "{{ azerothcore_docker_path }}/data"
+azerothcore_docker_scripts_path: "{{ azerothcore_docker_path }}/scripts"
 
-azerothcore_docker_push_images: true
-azerothcore_docker_registry_enabled: true
+azerothcore_docker_push_images_on_build: true
 azerothcore_docker_registry_port: "5000"
 azerothcore_docker_registry_address: "{{ inventory_hostname }}:{{ azerothcore_docker_registry_port }}"
 azerothcore_docker_registry_version: "2"
-azerothcore_docker_image_tag: "{{ azerothcore_docker_progression_version ~ iso8601_basic_short }}"
+azerothcore_docker_image_tag: "{{ azerothcore_docker_progression_version }}"
 
 azerothcore_docker_db_pwd:  "{{ undef(hint='azerothcore_docker_db_pwd needs a password defined to proceed') }}"
 
@@ -37,24 +38,24 @@ azerothcore_docker_phpmyadmin_port: "8080"
 azerothcore_docker_compose_overrides:
   services:
     ac-db-import:
-      image: "{{ azerothcore_docker_registry }}/acore/ac-wotlk-db-import:{{ azerothcore_docker_image_tag }}"
+      image: "{{ azerothcore_docker_registry_address }}/acore/ac-wotlk-db-import:{{ azerothcore_docker_image_tag }}"
     ac-worldserver:
-      image: "{{ azerothcore_docker_registry }}/acore/ac-wotlk-worldserver:{{ azerothcore_docker_image_tag }}"
+      image: "{{ azerothcore_docker_registry_address }}/acore/ac-wotlk-worldserver:{{ azerothcore_docker_image_tag }}"
       volumes:
         - "{{ azerothcore_docker_modules_path }}:/azerothcore/modules"
         - "{{ azerothcore_docker_config_path }}/modules:/azerothcore/env/dist/etc/modules"
         - "{{ azerothcore_docker_config_path }}/worldserver.conf:/azerothcore/env/dist/etc/worldserver.conf"
-        - ./scripts/lua:/azerothcore/env/dist/bin/lua_scripts/scripts
+        - "{{ azerothcore_docker_scripts_path }}/lua:/azerothcore/env/dist/bin/lua_scripts/scripts"
         - "${DOCKER_VOL_CLIENT_DATA:-ac-client-data}:/azerothcore/env/dist/data:ro"
     ac-authserver:
-      image: "{{ azerothcore_docker_registry }}/acore/ac-wotlk-authserver:{{ azerothcore_docker_image_tag }}"
+      image: "{{ azerothcore_docker_registry_address }}/acore/ac-wotlk-authserver:{{ azerothcore_docker_image_tag }}"
       volumes:
         - "{{ azerothcore_docker_modules_path }}:/azerothcore/modules"
         - "{{ azerothcore_docker_config_path }}/modules:/azerothcore/env/dist/etc/modules"
     ac-eluna-ts-dev:
       volumes:
-        - "{{ azerothcore_docker_project_path }}/scripts/typescript:/eluna-ts/modules"
-        - "{{ azerothcore_docker_project_path }}/scripts/lua:/eluna-ts/dist/"
+        - "{{ azerothcore_docker_scripts_path }}/typescript:/eluna-ts/modules"
+        - "{{ azerothcore_docker_scripts_path }}/lua:/eluna-ts/dist/"
       healthcheck:
         test: sh -c "cd /eluna-ts && npm run build:lib && npm run build"
     phpmyadmin:

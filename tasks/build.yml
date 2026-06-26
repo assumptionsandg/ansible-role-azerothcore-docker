@@ -11,14 +11,14 @@
   ansible.builtin.file:
     path: "{{ azerothcore_docker_builder_repository_path }}/modules/mod-individual-progression"
     state: directory
-  when: azerothcore_enable_progression
+  when: azerothcore_docker_progression_enabled
 
 - name: Copy module into builder context
   ansible.builtin.shell: |
-    rsync -a --delete
-    {{ azerothcore_docker_modules_path }}/mod-individual-progression/
+    rsync -a --delete \
+    {{ azerothcore_docker_modules_path }}/mod-individual-progression/ \
     {{ azerothcore_docker_builder_repository_path }}/modules/mod-individual-progression/
-  when: azerothcore_enable_progression
+  when: azerothcore_docker_progression_enabled
 
 - name: Slurp builder compose file
   ansible.builtin.slurp:
