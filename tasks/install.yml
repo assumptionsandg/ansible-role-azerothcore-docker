@@ -2,10 +2,10 @@
 
 - name: Clone upstream repository
   ansible.builtin.git:
-  repo: "{{ azerothcore_docker_repository }}"
-  version: "{{ azerothcore_docker_repository_version }}"
-  dest: "{{ azerothcore_docker_repository_path }}"
-  force: true
+    repo: "{{ azerothcore_docker_repository }}"
+    version: "{{ azerothcore_docker_repository_version }}"
+    dest: "{{ azerothcore_docker_repository_path }}"
+    force: true
 
 - name: Ensure additional directories exist
   ansible.builtin.file:
