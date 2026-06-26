@@ -1,18 +1,22 @@
 ---
 
-- include_tasks: install.yml
+- name: Install and template AzerothCore configuration
+  ansible.builtin.include_tasks: install.yml
   when: azerothcore_docker_state in ['present', 'restarted', 'install']
 
-- include_tasks: build.yml
+- name: Build AzerothCore images
+  ansible.builtin.include_tasks: build.yml
   when:
     - azerothcore_docker_state in ['present', 'restarted', 'install']
     - azerothcore_docker_build_images
 
-- include_tasks: push_images.yml
+- name: Push AzerothCore images to a registry
+  ansible.builtin.include_tasks: push_images.yml
   when:
     - azerothcore_docker_state in ['present', 'restarted', 'install']
     - azerothcore_docker_build_images
     - azerothcore_docker_push_images_on_build
 
-- include_tasks: deploy.yml
+- name: Manage AzerothCore containers
+  ansible.builtin.include_tasks: deploy.yml
   when: azerothcore_docker_state in ['present', 'restarted', 'absent', 'stopped']
