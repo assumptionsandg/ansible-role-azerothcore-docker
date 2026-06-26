@@ -1,13 +1,5 @@
 ---
 
-- name: Deploy registry
-  community.docker.docker_container:
-    name: docker-registry
-    image: "registry:{{ azerothcore_docker_registry_version }}"
-    state: started
-    ports:
-      - "{{ azerothcore_docker_registry_port }}:5000"
-
 - name: Ensure images are pushed
   ansible.builtin.shell: |
     docker tag acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }} {{ inventory_hostname }}:5000/acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }}
@@ -16,6 +8,6 @@
   environment:
     DOCKER_IMAGE_TAG: "{{ azerothcore_docker_image_tag }}"
   loop:
-    - worldserevr
+    - worldserver
     - authserver
     - db-import

@@ -6,16 +6,16 @@
     state: directory
     recurse: true
   loop:
-    - "{{ azerothcore_docker_project_path }}"
     - "{{ azerothcore_docker_modules_path }}"
     - "{{ azerothcore_docker_config_path }}"
+    - "{{ azerothcore_docker_scripts_path }}"
   become: true
 
 - name: Clone upstream repository
   ansible.builtin.git:
-    repo: "{{ azerothcore_docker_repository }}"
-    version: "{{ azerothcore_docker_repository_version }}"
-    dest: "{{ azerothcore_docker_repository_path }}"
+    repo: "{{ azerothcore_docker_compose_repository }}"
+    version: "{{ azerothcore_docker_compose_version }}"
+    dest: "{{ azerothcore_docker_compose_repository_path }}"
     force: true
   become: true
 
@@ -28,18 +28,15 @@
 
 - name: Ensure config directories exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ azerothcore_docker_config_path }}/modules"
     state: directory
-  loop:
-    - "{{ azerothcore_docker_config_path }}"
-    - "{{ azerothcore_docker_config_path }}/modules"
   become: true
 
 - name: Template worldserver config
   ansible.builtin.template:
-    src: "{{ playbook_dir }}/templates/worldserver.conf"
+    src: "{{ role_path }}/files/worldserver.conf"
     dest: "{{ azerothcore_docker_config_path }}/worldserver.conf"
-    mode: "0644"
+    mode: "0755"
     unsafe_writes: true
   become: true
 
@@ -48,12 +45,26 @@
     src: "{{ item }}"
     dest: "{{ azerothcore_docker_config_path }}/modules/{{ item | basename }}"
     unsafe_writes: true
+    mode: "0755" # same problem as elune-ts
   loop: "{{ lookup('ansible.builtin.fileglob', role_path ~ '/files/modules/*', wantlist=True) }}"
+  become: true
+
+- name: Check if compose already exists
+  ansible.builtin.stat:
+    path: "{{ azerothcore_docker_path }}/docker-compose.yml"
+  register: project_compose_file
+
+- name: Ensure upstream compose is written to project directory
+  ansible.builtin.copy:
+    src: "{{ azerothcore_docker_compose_repository_path }}/docker-compose.yml"
+    dest: "{{ azerothcore_docker_path }}/docker-compose.yml"
+    remote_src: true
+  when: not project_compose_file.stat.exists
   become: true
 
 - name: Slurp upstream compose file
   ansible.builtin.slurp:
-    src: "{{ azerothcore_docker_project_path }}/docker-compose.yml"
+    src: "{{ azerothcore_docker_path }}/docker-compose.yml"
   register: upstream_compose
 
 - name: Merge overrides to upstream compose
@@ -70,12 +81,15 @@
 
 - name: Ensure scripts are copied to project directory
   ansible.builtin.copy:
-    src: "{{ azerothcore_docker_repository_path }}/scripts"
-    dest: "{{ azerothcore_docker_project_path }}/scripts"
+    src: "{{ azerothcore_docker_compose_repository_path }}/scripts"
+    dest: "{{ azerothcore_docker_scripts_path }}/scripts"
+    mode: "0777" # container really isn't happy with this being owned by root
+    remote_src: true
   become: true
 
 - name: Ensure compose is written
   ansible.builtin.copy:
     content: "{{ azerothcore_docker_project_definition | to_nice_yaml(indent=2) }}"
-    dest: "{{ azerothcore_docker_project_path }}/docker-compose.yml"
+    dest: "{{ azerothcore_docker_path }}/docker-compose.yml"
+    remote_src: true
   become: true

@@ -8,7 +8,7 @@ This project has no affiliation with AzerothCore.
 
 * Clone the official `acore-docker` repository.
 * Build a custom AzerothCore server from source.
-* Build and optionally push images to a local Docker registry.
+* Build and push custom images.
 * Deploy the complete Docker Compose project.
 * Mount custom modules and configuration.
 * Support the Individual Progression module. (image build required for C++ module support).
@@ -20,6 +20,7 @@ The target host should have:
 
 * Docker
 * Docker Compose
+* Docker Registry (by default is assumed running on the Ansible host on port 5000)
 * Git
 * Sufficient disk space for building AzerothCore images (default docker path in /var/lib/docker)
 
@@ -41,9 +42,9 @@ The target host should have:
 
 | Variable                                | Description                               |
 | --------------------------------------- | ----------------------------------------- |
-| `azerothcore_docker_repository`         | `acore-docker` repository.                |
-| `azerothcore_docker_repository_version` | Version of the `acore-docker` repository. |
-| `azerothcore_docker_repository_path`    | Path where `acore-docker` will be cloned. |
+| `azerothcore_docker_compose_repository`         | `acore-docker` repository.                |
+| `azerothcore_docker_compose_repository_version` | Version of the `acore-docker` repository. |
+| `azerothcore_docker_compose_repository_path`    | Path where `acore-docker` will be cloned. |
 
 ### Container image build
 
@@ -63,15 +64,14 @@ The target host should have:
 | `azerothcore_docker_progression_version`    | Module revision.                |
 | `azerothcore_docker_progression_phase`      | Progression phase to configure. |
 
-### Docker Registry
+### Docker Registry configuration
 
-| Variable                              | Description                                        |
-| ------------------------------------- | -------------------------------------------------- |
-| `azerothcore_docker_registry_enabled` | Enable the local registry.                         |
-| `azerothcore_docker_registry_port`    | Registry port.                                     |
-| `azerothcore_docker_registry_address` | Registry address.                                  |
-| `azerothcore_docker_push_images`      | Push images after building. (if build is enabled)  |
-| `azerothcore_docker_image_tag`        | Image tag applied to builds.                       |
+| Variable                                  | Description                                                            |
+| ----------------------------------------- | -----------------------------------------------------------------------|
+| `azerothcore_docker_registry_port`        | Registry port.                                                         |
+| `azerothcore_docker_registry_address`     | Registry address (assumes a registry is deployed on the ansible host). |
+| `azerothcore_docker_push_images_on_build` | Push images after building. (if build is enabled)                      |
+| `azerothcore_docker_image_tag`            | Image tag applied to builds.                                           |
 
 ### Database
 
