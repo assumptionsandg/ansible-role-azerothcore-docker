@@ -5,7 +5,6 @@
     path: "{{ item }}"
     state: directory
     recurse: true
-    mode: "0755"
   loop:
     - "{{ azerothcore_docker_project_path }}"
     - "{{ azerothcore_docker_modules_path }}"
@@ -31,7 +30,6 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    mode: "0755"
   loop:
     - "{{ azerothcore_docker_config_path }}"
     - "{{ azerothcore_docker_config_path }}/modules"
@@ -49,7 +47,6 @@
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ azerothcore_docker_config_path }}/modules/{{ item | basename }}"
-    mode: "0644"
     unsafe_writes: true
   loop: "{{ lookup('ansible.builtin.fileglob', role_path ~ '/files/modules/*', wantlist=True) }}"
   become: true
@@ -75,7 +72,6 @@
   ansible.builtin.copy:
     src: "{{ azerothcore_docker_repository_path }}/scripts"
     dest: "{{ azerothcore_docker_project_path }}/scripts"
-    mode: "0755"
   become: true
 
 - name: Ensure compose is written
