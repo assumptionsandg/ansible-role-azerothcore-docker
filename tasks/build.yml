@@ -19,6 +19,7 @@
     {{ azerothcore_docker_modules_path }}/mod-individual-progression/ \
     {{ azerothcore_docker_builder_repository_path }}/modules/mod-individual-progression/
   when: azerothcore_docker_progression_enabled
+  changed_when: false # NOTE(holle): ill replace with posix.sync when able.
 
 - name: Slurp builder compose file
   ansible.builtin.slurp:
@@ -29,23 +30,25 @@
   ansible.builtin.set_fact:
     builder_project_definition: >-
       {{ builder_compose.content
-        | b64decode
-        | from_yaml
-        | combine(
-            azerothcore_docker_builder_overrides,
-            recursive = True
-              )
+      | b64decode
+      | from_yaml
+      | combine(
+      azerothcore_docker_builder_overrides,
+      recursive = True
+      )
       }}
 
 - name: Ensure compose is written
   ansible.builtin.copy:
     content: "{{ builder_project_definition | to_nice_yaml(indent=2) }}"
     dest: "{{ azerothcore_docker_builder_repository_path }}/docker-compose.yml"
+  register: written_compose
 
 - name: Build custom AzerothCore images
   ansible.builtin.shell: |
     cd "{{ azerothcore_docker_builder_repository_path }}"
     docker compose build --no-cache ac-worldserver ac-authserver ac-db-import
   become: true
+  changed_when: "{{ written_compose.changed }}"
   environment:
     DOCKER_IMAGE_TAG: "{{ azerothcore_docker_image_tag }}"

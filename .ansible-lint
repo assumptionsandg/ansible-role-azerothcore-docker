@@ -1,0 +1,6 @@
+---
+
+skip_list:
+  - role-name
+  - risky-file-permissions # NOTE(hollie): This will likely break config.
+  - command-instead-of-module # NOTE(hollie): Will change when I can test.

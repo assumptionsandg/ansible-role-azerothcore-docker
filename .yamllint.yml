@@ -1,0 +1,81 @@
+# .yamllint.yml - Configuration tuned for Ansible
+---
+extends: default
+
+rules:
+  # Line length: Ansible tasks can get long, especially with Jinja2
+  line-length:
+    max: 160
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Truthy: enforce true/false over yes/no
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false
+
+  # Comments: require space after # and at least 1 space before inline comments
+  comments:
+    require-starting-space: true
+    ignore-shebangs: true
+    min-spaces-from-content: 1
+
+  # Indentation: 2 spaces, consistent sequences, multi-line
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: true
+
+  # Braces: allow single-line with spaces
+  braces:
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
+
+  # Brackets: same as braces
+  brackets:
+    forbid: false
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Document start: require ---
+  document-start:
+    present: true
+
+  # Document end: do not require ...
+  document-end: disable
+
+  # Empty lines: max 2 consecutive, none at start
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 0
+
+  # New lines: LF only
+  new-lines:
+    type: unix
+
+  # Colons: standard spacing
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Hyphens: standard spacing
+  hyphens:
+    max-spaces-after: 1
+
+  # Octal values: require quoting file permissions like "0644"
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+ignore: |
+  .cache/
+  .git/
+  collections/
+  roles/external/
+  venv/
+  node_modules/

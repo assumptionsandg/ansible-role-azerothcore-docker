@@ -27,7 +27,7 @@ azerothcore_docker_registry_address: "{{ inventory_hostname }}:{{ azerothcore_do
 azerothcore_docker_registry_version: "2"
 azerothcore_docker_image_tag: "{{ azerothcore_docker_progression_version }}"
 
-azerothcore_docker_db_pwd:  "{{ undef(hint='azerothcore_docker_db_pwd needs a password defined to proceed') }}"
+azerothcore_docker_db_pwd: "{{ undef(hint='azerothcore_docker_db_pwd needs a password defined to proceed') }}"
 
 azerothcore_docker_environment:
   DOCKER_CLIENT_DATA_FOLDER: "{{ azerothcore_docker_assets_path }}"

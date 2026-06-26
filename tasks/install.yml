@@ -71,12 +71,12 @@
   ansible.builtin.set_fact:
     azerothcore_docker_project_definition: >-
       {{ upstream_compose.content
-        | b64decode
-        | from_yaml
-        | combine(
-            azerothcore_docker_compose_overrides,
-            recursive = True
-              )
+      | b64decode
+      | from_yaml
+      | combine(
+      azerothcore_docker_compose_overrides,
+      recursive = True
+      )
       }}
 
 - name: Ensure scripts are copied to project directory

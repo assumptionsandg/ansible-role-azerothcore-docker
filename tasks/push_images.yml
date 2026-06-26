@@ -2,9 +2,12 @@
 
 - name: Ensure images are pushed
   ansible.builtin.shell: |
-    docker tag acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }} {{ inventory_hostname }}:5000/acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }}
+    docker tag acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }} \
+    {{ inventory_hostname }}:5000/acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }}
+
     docker push {{ inventory_hostname }}:5000/acore/ac-wotlk-{{ item }}:{{ azerothcore_docker_image_tag }}
   become: true
+  changed_when: false # NOTE(hollie): we could probably replace this with a module.
   environment:
     DOCKER_IMAGE_TAG: "{{ azerothcore_docker_image_tag }}"
   loop:
