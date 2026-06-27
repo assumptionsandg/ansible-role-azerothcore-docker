@@ -35,5 +35,5 @@ jobs:
           GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
         run: |
           ansible-galaxy collection publish \
-            assumptionsandg-azerothcore-*.tar.gz \
-            --api-key "${GALAXY_API_KEY}"
+          assumptionsandg-azerothcore-*.tar.gz \
+          --api-key "${GALAXY_API_KEY}"
