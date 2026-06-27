@@ -1,18 +1,21 @@
 # Ansible Collection AzerothCore
 
-Deploys an [AzerothCore](https://www.azerothcore.org/) Docker environment using the official `acore-docker` project. The role automates cloning the required repositories, building custom server images, deploying the Docker Compose stack, and optionally integrating the Individual Progression module.
+Deploys an [AzerothCore](https://www.azerothcore.org/) Docker environment using
+the official `acore-docker` project. The collection automates cloning the
+required repositories, building custom server images, deploying the Docker
+Compose stack, and optionally integrating the Individual Progression module.
 
 This project has no affiliation with AzerothCore.
 
 ## Features
 
 * Clone the official `acore-docker` repository.
-* Build a custom AzerothCore server from source.
-* Build and push custom images.
-* Deploy the complete Docker Compose project.
+* Build custom AzerothCore server images from source.
+* Build and optionally push images to a Docker registry.
+* Deploy the Docker Compose stack.
 * Mount custom modules and configuration.
-* Support the Individual Progression module. (image build required for C++ module support).
-* Override both the builder and Docker Compose configuration without modifying upstream repositories.
+* Support the Individual Progression module by default.
+* Includes playbooks for common build and deployment workflows.
 
 ## Requirements
 
@@ -20,107 +23,115 @@ The target host should have:
 
 * Docker
 * Docker Compose
-* Docker Registry (by default is assumed running on the Ansible host on port 5000)
 * Git
-* Sufficient disk space for building AzerothCore images (default docker path in /var/lib/docker)
+* Sufficient disk space for building AzerothCore images.
 
-## Role Variables
+If image pushing is enabled, a Docker registry is also required. By default,
+the collection assumes a registry is available on the Ansible control host on
+port `5000`.
 
-### General
+## Roles
 
-| Variable                             | Description                                                                                                                                       |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `azerothcore_docker_project_path`    | Docker Compose project directory. (where upstrem compose will be copied to.)                                                                      |
-| `azerothcore_install_modules_path`    | Directory containing AzerothCore modules.                                                                                                         |
-| `azerothcore_install_config_path`     | Server configuration directory.                                                                                                                   |
-| `azerothcore_install_assets_path`     | Client data directory.                                                                                                                            |
-| `azerothcore_install_phpmyadmin_port` | Port where phpmyadmin (database web UI) will be exposed.                                                                                          |
-| `azerothcore_deploy_state`           | Desired Compose state. Set to `install` to run install/build only. See docs on `community.docker.docker_compose_v2` `state` option for more info. |
+### `azerothcore_install`
 
+Prepares the AzerothCore Docker project. This role clones the upstream
+`acore-docker` repository, creates the required directory structure, and writes
+the generated Docker Compose configuration.
 
-### AzerothCore Compose Repository
+#### Key Variables
 
-| Variable                                | Description                               |
-| --------------------------------------- | ----------------------------------------- |
-| `azerothcore_install_compose_repository`         | `acore-docker` repository.                |
-| `azerothcore_install_compose_repository_version` | Version of the `acore-docker` repository. |
-| `azerothcore_install_compose_repository_path`    | Path where `acore-docker` will be cloned. |
+| Variable                                         | Description                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------- |
+| `azerothcore_install_path`                       | Docker Compose project directory.                                 |
+| `azerothcore_install_modules_path`               | Directory containing AzerothCore modules.                         |
+| `azerothcore_install_config_path`                | Server configuration directory.                                   |
+| `azerothcore_install_assets_path`                | Client data directory.                                            |
+| `azerothcore_install_phpmyadmin_port`            | Port where phpMyAdmin will be exposed.                            |
+| `azerothcore_install_db_pwd`                     | MariaDB root password. **Required.**                              |
+| `azerothcore_install_compose_repository`         | Upstream `acore-docker` repository.                               |
+| `azerothcore_install_compose_repository_version` | Version/ref of the upstream repository.                           |
+| `azerothcore_install_compose_repository_path`    | Path where `acore-docker` will be cloned.                         |
+| `azerothcore_install_compose_overrides`          | Overrides applied to the generated runtime Compose configuration. |
 
-### Container image build
+### `azerothcore_modules`
 
-| Variable                                     | Description                                    |
-| -------------------------------------------- | ---------------------------------------------- |
-| `azerothcore_build_images`            | Whether to build images (default is false).    |
-| `azerothcore_build_repository`      | AzerothCore source repository.                 |
-| `azerothcore_build_version`         | Version of the builder repository.             |
-| `azerothcore_build_repository_path` | Path where `azerothcore-wotlk` will be cloned. |
+Manages AzerothCore modules, including optional support for the Individual
+Progression module.
 
-### Individual Progression (optional Vanilla/TBC realistic progression mod)
+#### Key Variables
 
-| Variable                                    | Description                     |
-| ------------------------------------------- | ------------------------------- |
-| `azerothcore_docker_progression_enabled`    | Enable progression support.     |
-| `azerothcore_modules_progression_repository` | Progression module repository.  |
-| `azerothcore_modules_progression_version`    | Module revision.                |
-| `azerothcore_modules_progression_phase`      | Progression phase to configure. |
+| Variable                                     | Description                            |
+| -------------------------------------------- | -------------------------------------- |
+| `azerothcore_docker_progression_enabled`     | Enable Individual Progression support. |
+| `azerothcore_modules_progression_repository` | Progression module repository.         |
+| `azerothcore_modules_progression_version`    | Progression module version/ref.        |
+| `azerothcore_modules_progression_phase`      | Progression phase to configure.        |
 
-### Docker Registry configuration
+### `azerothcore_build`
 
-| Variable                                  | Description                                                            |
-| ----------------------------------------- | -----------------------------------------------------------------------|
-| `azerothcore_build_registry_port`        | Registry port.                                                         |
-| `azerothcore_build_registry_address`     | Registry address (assumes a registry is deployed on the ansible host). |
-| `azerothcore_build_push_images` | Push images after building. (if build is enabled)                      |
-| `azerothcore_build_image_tag`            | Image tag applied to builds.                                           |
+Builds custom AzerothCore Docker images and optionally pushes them to a Docker
+registry.
 
-### Database
+#### Key Variables
 
-| Variable                    | Description                          |
-| --------------------------- | ------------------------------------ |
-| `azerothcore_install_db_pwd` | MariaDB root password. **Required.** |
-
-### Compose Overrides
-
-`azerothcore_install_compose_overrides` allows callers to customise the generated Docker Compose configuration.
-
-This can be used to:
-
-* Mount additional modules (untested).
-* Replace Docker images.
-* Override health checks.
-* Expose additional ports.
-* Add custom volumes.
-
-`azerothcore_build_compose_overrides` similarly allows customisation of the generated builder configuration before images are built.
+| Variable                              | Description                                                       |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| `azerothcore_build_images`            | Whether images should be built.                                   |
+| `azerothcore_build_repository`        | AzerothCore source repository.                                    |
+| `azerothcore_build_version`           | AzerothCore source version/ref.                                   |
+| `azerothcore_build_repository_path`   | Path where the source repository will be cloned.                  |
+| `azerothcore_build_push_images`       | Push images after building.                                       |
+| `azerothcore_build_image_tag`         | Image tag applied to built images.                                |
+| `azerothcore_build_registry_address`  | Docker registry address.                                          |
+| `azerothcore_build_registry_port`     | Docker registry port.                                             |
+| `azerothcore_build_compose_overrides` | Overrides applied to the generated builder Compose configuration. |
 
 ## Dependencies
 
-This role has no required Ansible Galaxy dependencies.
+This collection depends on:
 
-## Example Playbook
+* `ansible.posix`
+* `community.docker`
 
-```yaml
-- hosts: game_servers
-  become: true
-  roles:
-    - role: azerothcore_docker
+## Included Playbooks
+
+### `deploy.yml`
+
+Runs the complete deployment workflow:
+
+1. Prepare the `acore-docker` project.
+2. Configure AzerothCore modules.
+3. Optionally build custom images.
+4. Deploy the Docker Compose stack.
+
+The Docker Compose deployment state can be controlled using
+`azerothcore_deploy_state`, which defaults to `present`.
+
+```bash
+ansible-playbook assumptionsandg.azerothcore.deploy
+```
+
+### `build.yml`
+
+Builds custom AzerothCore images without deploying the Docker Compose stack.
+
+```bash
+ansible-playbook assumptionsandg.azerothcore.build
 ```
 
 ## Example Configuration
 
 ```yaml
-azerothcore_docker_progression_enabled: true
-azerothcore_modules_progression_phase: 7 # Vanilla Phase 6
+azerothcore_install_db_pwd: "<password>"
 
-azerothcore_docker_registry_enabled: true
 azerothcore_build_images: true
+azerothcore_build_push_images: true
 
-azerothcore_install_db_pwd: <password>
 ```
 
 ## License
 
-GPL v3.0
+GPL-3.0-only
 
 ## Notes
 
