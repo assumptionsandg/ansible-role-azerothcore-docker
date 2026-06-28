@@ -1,7 +1,10 @@
 ---
 
-azerothcore_user_soap_address:
 azerothcore_user_soap_username:
 azerothcore_user_soap_password:
+
+azerothcore_user_enable_bootstrap: true
+azerothcore_user_bootstrap_username: acabootstrap
+azerothcore_user_bootstrap_password: "{{ undef(hint='azerothcore_user_bootstrap_password needs a password defined to proceed') if azerothcore_user_enable_bootstrap else '' }}"
 
 azerothcore_user_list:
