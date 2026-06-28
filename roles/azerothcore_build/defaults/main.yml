@@ -4,7 +4,7 @@ azerothcore_build_repository: https://github.com/azerothcore/azerothcore-wotlk.g
 azerothcore_build_version: 84a66e345b4c0acd58994c3be9617b077e710919
 azerothcore_build_repository_path: "{{ azerothcore_install_path }}/build"
 
-azerothcore_build_images:
+azerothcore_build_images_list:
   - ac-authserver
   - ac-worldserver
   - ac-db-import

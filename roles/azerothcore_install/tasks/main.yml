@@ -29,16 +29,25 @@
 
 - name: Ensure scripts are copied to project directory
   ansible.builtin.copy:
-    src: "{{ azerothcore_install_compose_repository_path }}/scripts"
-    dest: "{{ azerothcore_install_scripts_path }}/scripts"
-    mode: "0777" # container really isn't happy with this being owned by root
+    src: "{{ azerothcore_install_compose_repository_path }}/scripts/"
+    dest: "{{ azerothcore_install_scripts_path }}"
     remote_src: true
+  become: true
+
+# NOTE(hollie): need to resolve permissions project wide.
+- name: Fix scripts perms
+  ansible.builtin.file:
+    path: "{{ azerothcore_install_scripts_path }}"
+    state: directory
+    mode: "0777"
+    recurse: true
   become: true
 
 - name: Slurp upstream compose file
   ansible.builtin.slurp:
-    src: "{{ azerothcore_install_path }}/docker-compose.yml"
+    src: "{{ azerothcore_install_compose_repository_path }}/docker-compose.yml"
   register: azerothcore_install_compose
+  become: true
 
 - name: Merge overrides to upstream compose
   ansible.builtin.set_fact:

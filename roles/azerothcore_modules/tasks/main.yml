@@ -2,10 +2,10 @@
 
 - name: Clone module repositories
   ansible.builtin.git:
-    repo: "{{ item.repository }}"
-    version: "{{ item.version }}"
+    repo: "{{ item.value.repository }}"
+    version: "{{ item.value.version }}"
     dest: "{{ azerothcore_install_modules_path }}/{{ item.key }}"
-  loop: "{{ azerothcore_modules_list }}"
+  loop: "{{ azerothcore_modules_dictionary | dict2items }}"
   become: true
 
 - name: Ensure config directories exist
@@ -14,13 +14,40 @@
     state: directory
   become: true
 
+- name: Find role module config templates
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files"
+    patterns: "*.conf"
+    file_type: file
+  register: azerothcore_modules_role_config_templates
+  delegate_to: localhost
+  become: false
+
+- name: Find user module config templates
+  ansible.builtin.find:
+    paths: "{{ inventory_dir | dirname }}/files/modules"
+    patterns: "*.conf"
+    file_type: file
+  register: azerothcore_modules_user_config_templates
+  delegate_to: localhost
+  become: false
+
 - name: Template module configs
   ansible.builtin.template:
-    src: "{{ item }}"
-    dest: "{{ azerothcore_install_config_path }}/modules/{{ item | basename }}"
-    unsafe_writes: true
-    mode: "0755" # same problem as elune-ts
-  loop:
-    - "{{ lookup('ansible.builtin.fileglob', role_path ~ '/files/modules/*', wantlist=True) }}"
-    - "{{ lookup('ansible.builtin.fileglob', playbook_dir ~ '/files/modules/*', wantlist=True) }}"
+    src: "{{ item.path }}"
+    dest: "{{ azerothcore_install_config_path }}/modules/{{ item.path | basename }}"
+  loop: >-
+    {{
+    azerothcore_modules_role_config_templates.files
+    + azerothcore_modules_user_config_templates.files
+    }}
+  become: true
+
+# NOTE(hollie): need to resolve permissions project wide.
+- name: Fix module perms
+  ansible.builtin.file:
+    path: "{{ azerothcore_install_config_path }}/modules/"
+    mode: "0777"
+    state: "directory"
+    recurse: true
   become: true

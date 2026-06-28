@@ -2,19 +2,16 @@
 
 - name: Deploy AzerothCore
   hosts: azerothcore
-  vars:
-    azerothcore_build_images: true
-    azerothcore_deploy_state: "present"
   roles:
     - role: assumptionsandg.azerothcore.azerothcore_install
     - role: assumptionsandg.azerothcore.azerothcore_modules
     - role: assumptionsandg.azerothcore.azerothcore_build
-      when: azerothcore_build_images
+      when: azerothcore_build_images | default(true) | bool
   tasks:
     - name: Deploy AzerothCore compose
       community.docker.docker_compose_v2:
         project_src: "{{ azerothcore_install_path }}"
-        state: "{{ azerothcore_deploy_state }}"
+        state: "{{ azerothcore_deploy_state | default('present') }}"
         wait: true
       environment: "{{ azerothcore_install_environment }}"
       become: true

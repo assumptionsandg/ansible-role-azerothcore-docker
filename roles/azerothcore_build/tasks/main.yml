@@ -6,12 +6,15 @@
     version: "{{ azerothcore_build_version }}"
     dest: "{{ azerothcore_build_repository_path }}"
     force: true
+  become: true
 
 - name: Copy modules into builder directory
   ansible.builtin.copy:
-    dest: "{{ azerothcore_install_modules_path }}/{{ item.key }}"
+    src: "{{ azerothcore_install_modules_path }}/{{ item.key }}"
+    dest: "{{ azerothcore_build_repository_path }}/modules"
+    remote_src: true
   become: true
-  loop: "{{ azerothcore_modules_list }}"
+  loop: "{{ azerothcore_modules_dictionary | dict2items }}"
 
 - name: Slurp builder compose file
   ansible.builtin.slurp:
@@ -34,12 +37,13 @@
   ansible.builtin.copy:
     content: "{{ azerothcore_build_project_definition | to_nice_yaml(indent=2) }}"
     dest: "{{ azerothcore_build_repository_path }}/docker-compose.yml"
+  become: true
   register: azerothcore_build_compose_state
 
 - name: Build custom AzerothCore images
   ansible.builtin.shell: |
-    cd "{{ azerothcore_build_repository_path }}"
-    docker compose build --no-cache "{{ azerothcore_build_images | join(' ') }}"
+    cd {{ azerothcore_build_repository_path }}
+    docker compose build --no-cache {{ azerothcore_build_images_list | join(' ') }}
   become: true
   changed_when: "{{ azerothcore_build_compose_state.changed }}"
   environment:

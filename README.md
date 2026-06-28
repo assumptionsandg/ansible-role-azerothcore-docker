@@ -60,12 +60,15 @@ Progression module.
 
 #### Variables
 
-| Variable                                      | Description                            |
-| --------------------------------------------- | -------------------------------------- |
-| `azerothcore_modules_progression_enabled`     | Enable Individual Progression support. |
-| `azerothcore_modules_progression_repository`  | Progression module repository.         |
-| `azerothcore_modules_progression_version`     | Progression module version/ref.        |
-| `azerothcore_modules_progression_phase`       | Progression phase to configure.        |
+| Variable                                      | Description                                           |
+| --------------------------------------------- | ----------------------------------------------------- |
+| `azerothcore_modules_progression_enabled`     | Enable Individual Progression support.                |
+| `azerothcore_modules_progression_repository`  | Progression module repository.                        |
+| `azerothcore_modules_progression_version`     | Progression module version/ref.                       |
+| `azerothcore_modules_progression_phase`       | Progression phase to configure.                       |
+| `azerothcore_modules_default_dictionary`      | Default dictionary of modules (IP).                   |
+| `azerothcore_modules_default_dictionary`      | Extra dictionary of modules (add new modules to this).|
+| `azerothcore_modules_dictionary`              | Use this to override the default modules.             |
 
 ### `azerothcore_build`
 
@@ -74,17 +77,18 @@ registry.
 
 #### Variables
 
-| Variable                              | Description                                                       |
-| ------------------------------------- | ----------------------------------------------------------------- |
-| `azerothcore_build_images`            | Whether images should be built.                                   |
-| `azerothcore_build_repository`        | AzerothCore source repository.                                    |
-| `azerothcore_build_version`           | AzerothCore source version/ref.                                   |
-| `azerothcore_build_repository_path`   | Path where the source repository will be cloned.                  |
-| `azerothcore_build_push_images`       | Push images after building.                                       |
-| `azerothcore_build_image_tag`         | Image tag applied to built images.                                |
-| `azerothcore_build_registry_address`  | Docker registry address.                                          |
-| `azerothcore_build_registry_port`     | Docker registry port.                                             |
-| `azerothcore_build_compose_overrides` | Overrides applied to the generated builder Compose configuration. |
+| Variable                              | Description                                                                |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| `azerothcore_build_images`            | Whether images should be built.                                            |
+| `azerothcore_build_repository`        | AzerothCore source repository.                                             |
+| `azerothcore_build_version`           | AzerothCore source version/ref.                                            |
+| `azerothcore_build_repository_path`   | Path where the source repository will be cloned.                           |
+| `azerothcore_build_push_images`       | Push images after building.                                                |
+| `azerothcore_build_image_tag`         | Image tag applied to built images.                                         |
+| `azerothcore_build_registry_address`  | Docker registry address.                                                   |
+| `azerothcore_build_registry_port`     | Docker registry port.                                                      |
+| `azerothcore_build_compose_overrides` | Overrides applied to the generated builder Compose configuration.          |
+| `azerothcore_build_images_list`       | List of images to build (Default is worldserver, authserver and db-import) |
 
 ## Dependencies
 
@@ -121,11 +125,11 @@ ansible-playbook assumptionsandg.azerothcore.build
 
 ## Example Configuration
 
+Example config for a basic deployment.
+
 ```yaml
 azerothcore_install_db_pwd: "<password>"
-
-azerothcore_build_images: true
-azerothcore_build_push_images: true
+azerothcore_install_assets_path: "<path_to_asset_data>"
 
 ```
 

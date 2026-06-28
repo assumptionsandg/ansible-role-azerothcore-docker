@@ -18,12 +18,27 @@ azerothcore_install_environment:
   DOCKER_CLIENT_DATA_FOLDER: "{{ azerothcore_install_assets_path }}"
   DOCKER_DB_ROOT_PASSWORD: "{{ azerothcore_install_db_pwd }}"
 
+azerothcore_install_default_tag: master
+azerothcore_install_default_registry: docker.io
+azerothcore_install_registry: >-
+  {{
+  azerothcore_build_registry_address
+  if azerothcore_build_images | default(false) | bool
+  else azerothcore_install_default_registry
+  }}
+azerothcore_install_tag: >-
+  {{
+  azerothcore_build_image_tag
+  if azerothcore_build_images | default(false) | bool
+  else azerothcore_install_default_tag
+  }}
+
 azerothcore_install_compose_overrides:
   services:
     ac-db-import:
-      image: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-db-import:{{ azerothcore_build_image_tag }}"
+      image: "{{ azerothcore_install_registry }}/acore/ac-wotlk-db-import:{{ azerothcore_install_tag }}"
     ac-worldserver:
-      image: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-worldserver:{{ azerothcore_build_image_tag }}"
+      image: "{{ azerothcore_install_registry }}/acore/ac-wotlk-worldserver:{{ azerothcore_install_tag }}"
       volumes:
         - "{{ azerothcore_install_modules_path }}:/azerothcore/modules"
         - "{{ azerothcore_install_config_path }}/modules:/azerothcore/env/dist/etc/modules"
@@ -31,7 +46,7 @@ azerothcore_install_compose_overrides:
         - "{{ azerothcore_install_scripts_path }}/lua:/azerothcore/env/dist/bin/lua_scripts/scripts"
         - "${DOCKER_VOL_CLIENT_DATA:-ac-client-data}:/azerothcore/env/dist/data:ro"
     ac-authserver:
-      image: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-authserver:{{ azerothcore_build_image_tag }}"
+      image: "{{ azerothcore_install_registry }}/acore/ac-wotlk-authserver:{{ azerothcore_install_tag }}"
       volumes:
         - "{{ azerothcore_install_modules_path }}:/azerothcore/modules"
         - "{{ azerothcore_install_config_path }}/modules:/azerothcore/env/dist/etc/modules"

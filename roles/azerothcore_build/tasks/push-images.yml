@@ -2,16 +2,16 @@
 
 - name: Ensure images are tagged
   community.docker.docker_image_tag:
-    name: "acore/ac-wotlk-{{ item }}"
+    name: "acore/ac-wotlk-{{ item | regex_replace('^ac-', '') }}"
     tag: "{{ azerothcore_build_image_tag }}"
     repository:
-      - "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-{{ item }}"
-  loop: "{{ azerothcore_build_images }}"
+      - "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-{{ item | regex_replace('^ac-', '') }}"
+  loop: "{{ azerothcore_build_images_list }}"
   become: true
 
 - name: Ensure images are pushed
   community.docker.docker_image_push:
-    name: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-{{ item }}"
+    name: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-{{ item | regex_replace('^ac-', '') }}"
     tag: "{{ azerothcore_build_image_tag }}"
-  loop: "{{ azerothcore_build_images }}"
+  loop: "{{ azerothcore_build_images_list }}"
   become: true

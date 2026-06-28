@@ -4,11 +4,15 @@ azerothcore_modules_progression_repository: https://github.com/ZhengPeiRu21/mod-
 azerothcore_modules_progression_version: "20260616"
 azerothcore_modules_progression_phase: 7 # vanilla phase 6
 
-azerothcore_modules_default_list:
+azerothcore_modules_default_dictionary:
   mod-individual-progression:
     repository: "{{ azerothcore_modules_progression_repository }}"
     version: "{{ azerothcore_modules_progression_version }}"
 
-azerothcore_modules_extra_list:
+azerothcore_modules_extra_dictionary: {}
 
-azerothcore_modules_list: "{{ azerothcore_modules_default + azerothcore_modules_extra }}"
+azerothcore_modules_dictionary: >-
+  {{
+  azerothcore_modules_default_dictionary
+  | combine(azerothcore_modules_extra_dictionary | default({}))
+  }}
