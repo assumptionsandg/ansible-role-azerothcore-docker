@@ -40,12 +40,19 @@
   become: true
   register: azerothcore_build_compose_state
 
+- name: Check if images are available with existing tags
+  community.docker.docker_image_info:
+    name: "{{ azerothcore_build_registry_address }}/acore/ac-wotlk-worldserver:{{ azerothcore_build_image_tag }}"
+  become: true
+  register: azerothcore_build_image_info
+
 - name: Build custom AzerothCore images
   ansible.builtin.shell: |
     cd {{ azerothcore_build_repository_path }}
     docker compose build --no-cache {{ azerothcore_build_images_list | join(' ') }}
   become: true
-  changed_when: "{{ azerothcore_build_compose_state.changed }}"
+  changed_when: azerothcore_build_image_info.images | length == 0
+  when: azerothcore_build_image_info.images | length == 0
   environment:
     DOCKER_IMAGE_TAG: "{{ azerothcore_build_image_tag }}"
 
