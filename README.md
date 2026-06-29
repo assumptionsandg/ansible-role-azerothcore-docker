@@ -113,7 +113,7 @@ The Docker Compose deployment state can be controlled using
 `azerothcore_deploy_state`, which defaults to `present`.
 
 ```bash
-ansible-playbook assumptionsandg.azerothcore.deploy
+ansible-playbook holliefae.azerothcore.deploy
 ```
 
 ### `build.yml`
@@ -121,7 +121,7 @@ ansible-playbook assumptionsandg.azerothcore.deploy
 Builds custom AzerothCore images without deploying the Docker Compose stack.
 
 ```bash
-ansible-playbook assumptionsandg.azerothcore.build
+ansible-playbook holliefae.azerothcore.build
 ```
 
 ## Example Configuration

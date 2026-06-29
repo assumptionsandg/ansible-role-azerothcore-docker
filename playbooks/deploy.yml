@@ -3,9 +3,9 @@
 - name: Deploy AzerothCore
   hosts: azerothcore
   roles:
-    - role: assumptionsandg.azerothcore.azerothcore_install
-    - role: assumptionsandg.azerothcore.azerothcore_modules
-    - role: assumptionsandg.azerothcore.azerothcore_build
+    - role: holliefae.azerothcore.azerothcore_install
+    - role: holliefae.azerothcore.azerothcore_modules
+    - role: holliefae.azerothcore.azerothcore_build
       when: azerothcore_build_images | default(true) | bool
   tasks:
     - name: Deploy AzerothCore compose

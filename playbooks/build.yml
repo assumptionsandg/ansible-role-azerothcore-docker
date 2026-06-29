@@ -5,7 +5,7 @@
   vars:
     azerothcore_build_images: true
   roles:
-    - role: assumptionsandg.azerothcore.azerothcore_install
-    - role: assumptionsandg.azerothcore.azerothcore_modules
-    - role: assumptionsandg.azerothcore.azerothcore_build
+    - role: holliefae.azerothcore.azerothcore_install
+    - role: holliefae.azerothcore.azerothcore_modules
+    - role: holliefae.azerothcore.azerothcore_build
       when: azerothcore_build_images
