@@ -4,6 +4,7 @@
   community.docker.docker_compose_v2:
     project_src: "{{ azerothcore_install_path }}"
     state: "{{ azerothcore_deploy_state }}"
+    recreate: "{{ azerothcore_deploy_rebuild }}"
     wait: true
   environment: "{{ azerothcore_install_environment }}"
   become: true

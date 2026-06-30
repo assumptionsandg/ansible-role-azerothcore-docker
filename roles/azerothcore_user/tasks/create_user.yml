@@ -1,0 +1,69 @@
+---
+
+- name: Check if user exists
+  ansible.mysql.mysql_query:
+    login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
+    login_port: "{{ azerothcore_install_db_port | default('63306') }}"
+    login_user: root
+    login_password: "{{ azerothcore_install_db_pwd }}"
+    login_db: acore_auth
+    query: "SELECT id FROM account WHERE username = %s"
+    positional_args:
+      - "{{ item.key | upper }}"
+  register: azerothcore_user_check
+  when: item.value.enabled | bool
+
+- name: Create users
+  ansible.builtin.uri:
+    url: "{{ azerothcore_user_soap_address }}"
+    method: POST
+    url_username: "{{ azerothcore_user_soap_username }}"
+    url_password: "{{ azerothcore_user_soap_password }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: text/xml
+    body: "{{ lookup('template', role_path ~ '/templates/createuser-soap.xml.j2') }}"
+    body_format: raw
+  when: 
+    - item.value.enabled | bool
+    - azerothcore_user_check.query_result[0] | length == 0
+
+- name: Check user gm status
+  ansible.mysql.mysql_query:
+    login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
+    login_port: "{{ azerothcore_install_db_port | default('63306') }}"
+    login_user: root
+    login_password: "{{ azerothcore_install_db_pwd }}"
+    login_db: acore_auth
+    query: >-
+      SELECT account_access.gmlevel
+      FROM account_access
+      JOIN account ON account_access.id = account.id
+      WHERE account.username = %s
+    positional_args:
+      - "{{ item.key | upper }}"
+  register: azerothcore_user_gm_check
+  when: item.value.enabled | bool
+
+- name: Set fact for current gm level
+  ansible.builtin.set_fact:
+    azerothcore_user_current_gmlevel: >-
+      {{ azerothcore_user_gm_check.query_result[0][0].gmlevel
+         if (azerothcore_user_gm_check.query_result[0] | default([]) | length > 0)
+         else -1 }}
+  when: item.value.enabled | bool
+
+- name: Set user gm status
+  ansible.builtin.uri:
+    url: "{{ azerothcore_user_soap_address }}"
+    method: POST
+    url_username: "{{ azerothcore_user_soap_username }}"
+    url_password: "{{ azerothcore_user_soap_password }}"
+    force_basic_auth: true
+    headers:
+      Content-Type: text/xml
+    body: "{{ lookup('template', role_path ~ '/templates/setgmlevel-soap.xml.j2') }}"
+    body_format: raw
+  when:
+    - item.value.enabled | bool
+    - azerothcore_user_current_gmlevel | int != item.value.gmlevel | int

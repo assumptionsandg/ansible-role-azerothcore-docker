@@ -1,0 +1,66 @@
+---
+
+- name: Set fact for bootstrap creds
+  ansible.builtin.set_fact:
+    azerothcore_user_soap_username: "{{ azerothcore_user_bootstrap_username }}"
+    azerothcore_user_soap_password: "{{ azerothcore_user_bootstrap_password }}"
+
+- name: Check whether bootstrap user exists
+  ansible.mysql.mysql_query:
+    login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
+    login_port: "{{ azerothcore_install_db_port | default('63306') }}"
+    login_user: root
+    login_password: "{{ azerothcore_install_db_pwd }}"
+    login_db: acore_auth
+    query: "SELECT id FROM account WHERE username = %s"
+    positional_args:
+      - "{{ azerothcore_user_soap_username | upper }}"
+  register: azerothcore_user_bootstrap_user_check
+  no_log: true
+
+- name: Generate SRP6 credentials for bootstrap user
+  ansible.builtin.command:
+    cmd: "python3 {{ role_path }}/files/srp6_gen.py {{ azerothcore_user_soap_username }} {{ azerothcore_user_soap_password }}"
+  register: azerothcore_user_srp6
+  changed_when: false
+  no_log: true
+  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0
+
+- name: Parse SRP6 output
+  ansible.builtin.set_fact:
+    azerothcore_user_salt_hex: "{{ (azerothcore_user_srp6.stdout | from_json).salt }}"
+    azerothcore_user_verifier_hex: "{{ (azerothcore_user_srp6.stdout | from_json).verifier }}"
+  no_log: true
+  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0
+
+- name: Create bootstrap account row
+  ansible.mysql.mysql_query:
+    login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
+    login_port: "{{ azerothcore_install_db_port | default('63306') }}"
+    login_user: root
+    login_password: "{{ azerothcore_install_db_pwd }}"
+    login_db: acore_auth
+    query: >
+      INSERT INTO account (username, salt, verifier, expansion)
+      VALUES (%s, UNHEX(%s), UNHEX(%s), 2)
+    positional_args:
+      - "{{ azerothcore_user_soap_username | upper }}"
+      - "{{ azerothcore_user_salt_hex }}"
+      - "{{ azerothcore_user_verifier_hex }}"
+  no_log: true
+  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0
+
+- name: Grant GM level to bootstrap account
+  ansible.mysql.mysql_query:
+    login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
+    login_port: "{{ azerothcore_install_db_port | default('63306') }}"
+    login_user: root
+    login_password: "{{ azerothcore_install_db_pwd }}"
+    login_db: acore_auth
+    query: >
+      INSERT INTO account_access (id, gmlevel, RealmID)
+      SELECT id, 3, -1 FROM account WHERE username = %s
+    positional_args:
+      - "{{ azerothcore_user_soap_username | upper }}"
+  no_log: true
+  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0 

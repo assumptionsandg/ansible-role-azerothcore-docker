@@ -12,7 +12,7 @@ azerothcore_install_assets_path: "{{ azerothcore_install_path }}/data"
 azerothcore_install_scripts_path: "{{ azerothcore_install_path }}/scripts"
 
 azerothcore_install_enable_soap: true
-azerothcore_install_soap_address: "{{ ansible_facts.default_ipv4.address }}"
+azerothcore_install_soap_port: "7878"
 
 azerothcore_install_db_pwd: "{{ undef(hint='azerothcore_install_db_pwd needs a password defined to proceed') }}"
 azerothcore_install_phpmyadmin_port: "8080"
@@ -20,6 +20,7 @@ azerothcore_install_phpmyadmin_port: "8080"
 azerothcore_install_environment:
   DOCKER_CLIENT_DATA_FOLDER: "{{ azerothcore_install_assets_path }}"
   DOCKER_DB_ROOT_PASSWORD: "{{ azerothcore_install_db_pwd }}"
+  DOCKER_SOAP_EXTERNAL_PORT: "{{ azerothcore_install_soap_port }}"
 
 azerothcore_install_default_tag: master
 azerothcore_install_default_registry: docker.io

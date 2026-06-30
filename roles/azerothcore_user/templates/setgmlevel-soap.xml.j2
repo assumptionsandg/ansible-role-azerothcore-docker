@@ -6,8 +6,9 @@
         'account',
         'set',
         'gmlevel',
-        azerothcore_user_name,
-        azerothcore_user_gmlevel
+        item.key,
+        item.value.gmlevel,
+        -1
       ] | join(' ') | e }}</command>
     </ns1:executeCommand>
   </SOAP-ENV:Body>

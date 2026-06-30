@@ -7,6 +7,6 @@
     - role: holliefae.azerothcore.azerothcore_modules
     - role: holliefae.azerothcore.azerothcore_build
       when: azerothcore_build_images | default(true) | bool
-    - role: assumptionsandg.azerothcore.azerothcore_deploy
-    - role: assumptionsandg.azerothcore.azerothcore_user
+    - role: holliefae.azerothcore.azerothcore_deploy
+    - role: holliefae.azerothcore.azerothcore_user
       when: azerothcore_user_enable | default(true) | bool
