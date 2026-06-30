@@ -181,15 +181,26 @@ Manages AzerothCore users, including support for creating users and managing GM 
 
 #### Variables
 
-| Variable                              | Description                                       |
-| --------------------------------------| ------------------------------------------------- |
-| `azerothcore_user_list`               | Dictionary (ironically not a list) of users.      |
-| `azerothcore_user_soap_address`       | URL of the WorldServer SOAP server.               |
-| `azerothcore_user_soap_username`      | SOAP credential used during user creation.        |
-| `azerothcore_user_soap_password`      | SOAP credential used during user creation.        |
-| `azerothcore_user_enable_bootstrap`   | Whether to enable the creation of bootstrap user. |
-| `azerothcore_user_bootstrap_username` | Bootstrap username.                               |
-| `azerothcore_user_bootstrap_password` | Bootstrap password **Required**                   |
+| Variable                              | Description                                         |
+| --------------------------------------| --------------------------------------------------- |
+| `azerothcore_user_list`               | Dictionary (ironically not a list) of users.        |
+| `azerothcore_user_soap_address`       | URL of the WorldServer SOAP server.                 |
+| `azerothcore_user_soap_username`      | SOAP credential used during user creation.          |
+| `azerothcore_user_soap_password`      | SOAP credential used during user creation.          |
+| `azerothcore_user_enable_bootstrap`   | Whether to enable the creation of bootstrap user.   |
+| `azerothcore_user_bootstrap_username` | Bootstrap username.                                 |
+| `azerothcore_user_bootstrap_password` | Bootstrap password. **Required**.                   |
+
+### `azerothcore_deploy`
+
+Manages AzerothCore deployment. See the [Compose Module](https://docs.ansible.com/projects/ansible/latest/collections/community/docker/docker_compose_v2_module.html) for more information.
+
+#### Variables
+
+| Variable                     | Description                                        |
+| -----------------------------| ---------------------------------------------------|
+| `azerothcore_deploy_state`   | State of the compose project. (Default 'present'). |
+| `azerothcore_deploy_rebuild` | Rebuild condition of the compose project.          |
 
 ## Dependencies
 
