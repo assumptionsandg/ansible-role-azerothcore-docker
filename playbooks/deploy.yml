@@ -2,13 +2,19 @@
 
 - name: Deploy AzerothCore
   hosts: azerothcore
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
   roles:
     - role: holliefae.azerothcore.azerothcore_install
     - role: holliefae.azerothcore.azerothcore_modules
     - role: holliefae.azerothcore.azerothcore_build
       when: azerothcore_build_images | default(true) | bool
     - role: holliefae.azerothcore.azerothcore_deploy
+    - role: holliefae.azerothcore.azerothcore_realmlist
+      when: 
+        - azerothcore_realmlist_enable | default(true) | bool
+        - azerothcore_deploy_state not in ['absent', 'stopped']
     - role: holliefae.azerothcore.azerothcore_user
-      when: azerothcore_user_enable | default(true) | bool
-    - role: assumptionsandg.azerothcore.azerothcore_realmlsit
-      when: azerothcore_realmlist_enable | defautl(true) | bool
+      when: 
+        - azerothcore_user_enable | default(true) | bool
+        - azerothcore_deploy_state not in ['absent', 'stopped']

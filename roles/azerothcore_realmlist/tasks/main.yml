@@ -1,42 +1,18 @@
 ---
 
-- name: Retrieve realmlist information
+- name: Update realmlist
   ansible.mysql.mysql_query:
     login_host: "{{ azerothcore_install_db_address | default(ansible_facts.default_ipv4.address) }}"
     login_port: "{{ azerothcore_install_db_port | default('63306') }}"
     login_user: root
     login_password: "{{ azerothcore_install_db_pwd }}"
     login_db: acore_auth
-    query: "SELECT * FROM realmlist WHERE username = %s"
+    query: >-
+      UPDATE realmlist
+      SET name = %s, address = %s, localAddress = %s, port = %s
+      WHERE id = 1
     positional_args:
-      - "{{ azerothcore_user_soap_username | upper }}"
-  register: azerothcore_user_bootstrap_user_check
-  no_log: true
-
-- name: Create users
-  ansible.builtin.uri:
-    url: "{{ azerothcore_user_soap_address }}"
-    method: POST
-    url_username: "{{ azerothcore_user_soap_username }}"
-    url_password: "{{ azerothcore_user_soap_password }}"
-    force_basic_auth: true
-    headers:
-      Content-Type: text/xml
-    body: "{{ lookup('template', 'soap-account-create.xml.j2') }}"
-    body_format: raw
-  loop: "{{ azerothcore_user_list | dict2items }}"
-  when: item.value.enabled | bool
-
-- name: Set user gm status
-  ansible.builtin.uri:
-    url: "{{ azerothcore_user_soap_address }}"
-    method: POST
-    url_username: "{{ azerothcore_user_soap_username }}"
-    url_password: "{{ azerothcore_user_soap_password }}"
-    force_basic_auth: true
-    headers:
-      Content-Type: text/xml
-    body: "{{ lookup('template', 'setgmlevel-account-create.xml.j2') }}"
-    body_format: raw
-  loop: "{{ azerothcore_user_list | dict2items }}"
-  when: item.value.enabled | bool
+      - "{{ azerothcore_realmlist_name }}"
+      - "{{ azerothcore_realmlist_address }}"
+      - "{{ azerothcore_realmlist_local_address }}"
+      - "{{ azerothcore_realmlist_port }}"

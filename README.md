@@ -183,6 +183,7 @@ Manages AzerothCore users, including support for creating users and managing GM 
 
 | Variable                              | Description                                         |
 | --------------------------------------| --------------------------------------------------- |
+| `azerothcore_user_enable`             | Enable the user role.                               |
 | `azerothcore_user_list`               | Dictionary (ironically not a list) of users.        |
 | `azerothcore_user_soap_address`       | URL of the WorldServer SOAP server.                 |
 | `azerothcore_user_soap_username`      | SOAP credential used during user creation.          |
@@ -190,6 +191,20 @@ Manages AzerothCore users, including support for creating users and managing GM 
 | `azerothcore_user_enable_bootstrap`   | Whether to enable the creation of bootstrap user.   |
 | `azerothcore_user_bootstrap_username` | Bootstrap username.                                 |
 | `azerothcore_user_bootstrap_password` | Bootstrap password. **Required**.                   |
+
+### `azerothcore_realmlist`
+
+Manages AzerothCore realmlist. Only supports the default realm currently.
+
+#### Variables
+
+| Variable                              | Description                         |
+| --------------------------------------| ------------------------------------|
+| `azerothcore_realmlist_enable`        | Enable the realmlist role.          |
+| `azerothcore_realmlist_name`          | Name of the default realm.          |
+| `azerothcore_realmlist_address`       | Address of the default realm.       |
+| `azerothcore_realmlist_local_address` | Local address of the default realm. |
+| `azerothcore_realmlist_port`          | Default WorldServer port.           |
 
 ### `azerothcore_deploy`
 
