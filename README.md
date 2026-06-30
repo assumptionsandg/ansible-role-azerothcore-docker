@@ -4,7 +4,7 @@ Deploys an [AzerothCore](https://www.azerothcore.org/) Docker environment using
 the official `acore-docker` project. The collection automates cloning the
 required repositories, building custom server images, deploying the Docker
 Compose stack, and optionally custom modules ([Indvidiual Progression](https://github.com/ZhengPeiRu21/mod-individual-progression)
-is included by default)
+is included by default).
 
 This project has no affiliation with AzerothCore.
 
@@ -92,7 +92,7 @@ ansible-playbook holliefae.azerothcore.post_configure
 
 ## Example Configuration
 
-Example config for a basic deployment. (Ensure you encrypt secrets with Vault.)
+Example config for a basic deployment. (Ensure you encrypt secrets with Vault).
 
 ```yaml
 azerothcore_build_images: false
@@ -141,13 +141,13 @@ the generated Docker Compose configuration.
 ### `azerothcore_modules`
 
 Manages AzerothCore modules, including optional support for the Individual
-Progression module.
+Progression module. (Set `azerothcore_modules_default_dictionary` to `{}`
+to disable IP).
 
 #### Variables
 
 | Variable                                      | Description                                           |
 | --------------------------------------------- | ----------------------------------------------------- |
-| `azerothcore_modules_progression_enabled`     | Enable Individual Progression support.                |
 | `azerothcore_modules_progression_repository`  | Progression module repository.                        |
 | `azerothcore_modules_progression_version`     | Progression module version/ref.                       |
 | `azerothcore_modules_progression_phase`       | Progression phase to configure.                       |
