@@ -1,5 +1,13 @@
 ---
 
+- name: Wait for SOAP port to be available
+  ansible.builtin.wait_for:
+    host: "{{ azerothcore_user_soap_address | urlsplit('hostname') }}"
+    port: "{{ azerothcore_user_soap_address | urlsplit('port') }}"
+    state: started
+    timeout: 60
+    delay: 2
+
 - name: Ensure the bootstrap user is created
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/bootstrap_user.yml"
   when: azerothcore_user_enable_bootstrap | bool
