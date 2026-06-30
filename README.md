@@ -91,12 +91,31 @@ registry.
 | `azerothcore_build_compose_overrides` | Overrides applied to the generated builder Compose configuration.          |
 | `azerothcore_build_images_list`       | List of images to build (Default is worldserver, authserver and db-import) |
 
+### `azerothcore_user`
+
+Manages AzerothCore users, including support for creating users and managing GM status.
+
+#### Variables
+
+| Variable                              | Description                                       |
+| --------------------------------------| ------------------------------------------------- |
+| `azerothcore_user_list`               | Dictionary (ironically not a list) of users.      |
+| `azerothcore_user_soap_address`       | URL of the WorldServer SOAP server.               |
+| `azerothcore_user_soap_username`      | SOAP credential used during user creation.        |
+| `azerothcore_user_soap_password`      | SOAP credential used during user creation.        |
+| `azerothcore_user_enable_bootstrap`   | Whether to enable the creation of bootstrap user. |
+| `azerothcore_user_bootstrap_username` | Bootstrap username.                               |
+| `azerothcore_user_bootstrap_password` | Bootstrap password **Required**                   |
+
 ## Dependencies
 
 This collection depends on:
 
 * `ansible.posix`
 * `community.docker`
+* `ansible.mysql`
+
+Ensure `pymysql` is installed in your virtual environment.
 
 ## Included Playbooks
 

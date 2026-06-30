@@ -63,4 +63,4 @@
     positional_args:
       - "{{ azerothcore_user_soap_username | upper }}"
   no_log: true
-  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0 
+  when: azerothcore_user_bootstrap_user_check.query_result[0] | length == 0
