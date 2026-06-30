@@ -37,7 +37,7 @@ azerothcore_install_tag: >-
   else azerothcore_install_default_tag
   }}
 
-azerothcore_install_compose_overrides:
+azerothcore_install_compose_overrides_default:
   services:
     ac-db-import:
       image: "{{ azerothcore_install_registry }}/acore/ac-wotlk-db-import:{{ azerothcore_install_tag }}"
@@ -63,3 +63,11 @@ azerothcore_install_compose_overrides:
     phpmyadmin:
       ports:
         - "{{ azerothcore_install_phpmyadmin_port }}:80"
+
+azerothcore_install_compose_overrides_extra: {}
+
+azerothcore_install_compose_overrides: >-
+  {{
+  azerothcore_install_compose_overrides_default
+  | combine(azerothcore_install_compose_overrides_extra)
+  }}
