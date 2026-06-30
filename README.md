@@ -4,7 +4,7 @@ Deploys an [AzerothCore](https://www.azerothcore.org/) Docker environment using
 the official `acore-docker` project. The collection automates cloning the
 required repositories, building custom server images, deploying the Docker
 Compose stack, and optionally custom modules ([Indvidiual Progression](https://github.com/ZhengPeiRu21/mod-individual-progression)
-is included by default)
+is included by default).
 
 This project has no affiliation with AzerothCore.
 
