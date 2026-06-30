@@ -11,10 +11,10 @@
       when: azerothcore_build_images | default(true) | bool
     - role: holliefae.azerothcore.azerothcore_deploy
     - role: holliefae.azerothcore.azerothcore_realmlist
-      when: 
+      when:
         - azerothcore_realmlist_enable | default(true) | bool
         - azerothcore_deploy_state not in ['absent', 'stopped']
     - role: holliefae.azerothcore.azerothcore_user
-      when: 
+      when:
         - azerothcore_user_enable | default(true) | bool
         - azerothcore_deploy_state not in ['absent', 'stopped']
