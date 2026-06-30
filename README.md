@@ -31,6 +31,9 @@ If image pushing is enabled, a Docker registry is also required. By default,
 the collection assumes a registry is available on the Ansible control host on
 port `5000`.
 
+This playbook requires root privleges. You can pass in a root password with
+`--become-pass-file` or by enabling passwordless-sudo.
+
 ## Usage
 
 ### Deployment
